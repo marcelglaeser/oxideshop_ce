@@ -10,7 +10,7 @@ use \oxTestModules;
 /**
  * Smarty emulation class
  */
-class GenExportDoTest_smarty
+class GenExportDoTest_smarty extends \Smarty
 {
 
     /**

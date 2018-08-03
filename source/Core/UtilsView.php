@@ -15,6 +15,8 @@ use OxidEsales\Eshop\Core\Module\ModuleTemplateBlockRepository;
 use OxidEsales\Eshop\Core\Module\ModuleVariablesLocator;
 use OxidEsales\Eshop\Core\Module\ModuleSmartyPluginDirectoryRepository;
 use OxidEsales\Eshop\Core\ShopIdCalculator as EshopShopIdCalculator;
+use OxidEsales\EshopCommunity\Core\Templating\oxSmarty;
+use OxidEsales\EshopCommunity\Core\Templating\TemplateRenderer;
 use Smarty;
 
 /**
@@ -85,7 +87,6 @@ class UtilsView extends \OxidEsales\Eshop\Core\Base
      */
     public function getTemplateOutput($templateName, $oObject)
     {
-        $smarty = $this->getSmarty();
         $debugMode = $this->getConfig()->getConfigParam('iDebug');
 
         // assign
@@ -97,11 +98,13 @@ class UtilsView extends \OxidEsales\Eshop\Core\Base
                     echo("TemplateData[$viewName] : \n");
                     var_export($viewData[$viewName]);
                 }
-                $smarty->assign($viewName, $viewData[$viewName]);
             }
+        } else {
+            $viewData = [];
         }
 
-        return $smarty->fetch($templateName);
+        $template = new TemplateRenderer();
+        return $template->renderTemplate($templateName, $viewData);
     }
 
     /**
@@ -344,6 +347,7 @@ class UtilsView extends \OxidEsales\Eshop\Core\Base
         $smarty->register_resource(
             'ox',
             [
+                oxSmarty::class,
                 'ox_get_template',
                 'ox_get_timestamp',
                 'ox_get_secure',

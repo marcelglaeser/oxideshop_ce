@@ -6,22 +6,25 @@
  * Time: 13:38
  */
 
-namespace OxidEsales\EshopCommunity\Core;
+namespace OxidEsales\EshopCommunity\Core\Templating;
 
 
 use Symfony\Component\Templating\TemplateNameParser;
 
 class TemplateRenderer
 {
-    public function renderTemplate($templateName, $viewData, $view)
+    public function renderTemplate($templateName, $viewData, $view = null)
     {
         $templateNameParser = new TemplateNameParser();
+        $cacheId = null;
 
         // get Smarty is important here as it sets template directory correct
         $smarty = \OxidEsales\Eshop\Core\Registry::getUtilsView()->getSmarty();
-        $smarty->oxobject = $view;
+        if ($view) {
+            $cacheId = $view->getViewId();
+        }
         $templating = new SmartyEngine($smarty, $templateNameParser);
-        $templating->setCacheId($view->getViewId());
+        $templating->setCacheId($cacheId);
 
         return $templating->render($templateName, $viewData);
     }

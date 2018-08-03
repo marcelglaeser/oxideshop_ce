@@ -81,8 +81,9 @@ class WidgetControl extends \OxidEsales\Eshop\Core\ShopControl
             }
 
             // Setting back last active view.
-            $oSmarty = \OxidEsales\Eshop\Core\Registry::getUtilsView()->getSmarty();
-            $oSmarty->assign('oView', $oConfig->getActiveView());
+            //TODO: Why?
+           // $oSmarty = \OxidEsales\Eshop\Core\Registry::getUtilsView()->getSmarty();
+            //$oSmarty->assign('oView', $oConfig->getActiveView());
         }
     }
 

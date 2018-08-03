@@ -6,55 +6,68 @@
  * Time: 09:34
  */
 
-namespace OxidEsales\EshopCommunity\Core;
+namespace OxidEsales\EshopCommunity\Core\Templating;
 
 use Symfony\Component\Templating\EngineInterface;
-use Symfony\Component\Templating\TemplateNameParserInterface;
 
 class SmartyEngine implements EngineInterface
 {
-    private $smarty;
-
-    private $parser;
-
     private $cacheId;
+
+    /**
+     * The template engine.
+     *
+     * @var \Smarty
+     */
+    private $engine;
+
     /**
      * Constructor.
      *
-     * @param \Smarty                     $environment A Smarty instance
-     * @param TemplateNameParserInterface $parser      A TemplateNameParserInterface instance
+     * @param \Smarty $engine
      */
-    public function __construct(\Smarty $smarty, TemplateNameParserInterface $parser)
+    public function __construct(\Smarty $engine)
     {
-        // The parser to use.
-        $this->parser = $parser;
-        // Create the Smarty template engine.
-        $this->smarty = $smarty;
-        // Set any of the required configuration.
+        $this->engine = $engine;
     }
     /**
-     * Renders a template.
+     * Render the template.
      *
-     * @param string|TemplateReferenceInterface $name       A template name or a TemplateReferenceInterface instance
-     * @param array                             $parameters An array of parameters to pass to the template
+     * @param string $file
+     * @param array  $vars
      *
-     * @return string The evaluated template as a string
-     *
-     * @throws \RuntimeException if the template cannot be rendered
-     *
-     * @api
+     * @return string
      */
     public function render($name, array $parameters = array())
     {
-        foreach (array_keys($parameters) as $viewName) {
-            $this->smarty->assign_by_ref($viewName, $parameters[$viewName]);
+        foreach ($parameters as $key => $value) {
+            $this->engine->assign($key, $value);
         }
         if (isset($this->cacheId)) {
-            return $this->smarty->fetch($name, $this->cacheId);
+            return $this->engine->fetch($name, $this->cacheId);
         }
-        // Render the template using Smarty.
-        return $this->smarty->fetch($name);
+        return $this->engine->fetch($name);
     }
+
+    public function setCacheId($cacheId)
+    {
+        $this->cacheId = $cacheId;
+    }
+
+    /**
+     * Returns true if this class is able to render the given template.
+     *
+     * @param string|TemplateReferenceInterface $name A template name or a TemplateReferenceInterface instance
+     *
+     * @return bool    true if this class supports the given template, false otherwise
+     *
+     * @api
+     */
+    public function supports($name)
+    {
+        //Todo
+    }
+
     /**
      * Returns true if the template exists.
      *
@@ -68,33 +81,7 @@ class SmartyEngine implements EngineInterface
      */
     public function exists($name)
     {
-        return $this->smarty->templateExists($this->nameToString($name));
-    }
-    /**
-     * Returns true if this class is able to render the given template.
-     *
-     * @param string|TemplateReferenceInterface $name A template name or a TemplateReferenceInterface instance
-     *
-     * @return bool    true if this class supports the given template, false otherwise
-     *
-     * @api
-     */
-    public function supports($name)
-    {
-        $template = $this->parser->parse($name);
-        return 'smarty' === $template->get('engine');
+        //Todo
     }
 
-    public function setCacheId($cacheId)
-    {
-        $this->cacheId = $cacheId;
-    }
-
-    /**
-     * Converts a template name to string if it is anything other than a string.
-     */
-    private function nameToString($name)
-    {
-        return is_string($name) ? $name : $name->toString();
-    }
 }

@@ -6,6 +6,7 @@
 namespace OxidEsales\EshopCommunity\Tests\Unit\Core;
 
 use OxidEsales\Eshop\Core\Theme;
+use OxidEsales\EshopCommunity\Core\Templating\oxSmarty;
 use \stdClass;
 use \oxRegistry;
 use \oxTestModules;
@@ -696,6 +697,7 @@ class UtilsViewTest extends \OxidTestCase
                 $this->equalTo('ox'),
                 $this->equalTo(
                     [
+                        oxSmarty::class,
                         'ox_get_template',
                         'ox_get_timestamp',
                         'ox_get_secure',

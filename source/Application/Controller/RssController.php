@@ -6,8 +6,7 @@
 
 namespace OxidEsales\EshopCommunity\Application\Controller;
 
-use OxidEsales\EshopCommunity\Core\SmartyEngine;
-use OxidEsales\EshopCommunity\Core\TemplateRenderer;
+use OxidEsales\EshopCommunity\Core\Templating\TemplateRenderer;
 use oxRegistry;
 use oxUBase;
 use oxRssFeed;
