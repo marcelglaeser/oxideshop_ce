@@ -9,6 +9,7 @@
 namespace OxidEsales\EshopCommunity\Core\Templating;
 
 
+use OxidEsales\Eshop\Core\UtilsView;
 use Symfony\Component\Templating\TemplateNameParser;
 
 class TemplateRenderer
@@ -19,7 +20,8 @@ class TemplateRenderer
         $cacheId = null;
 
         // get Smarty is important here as it sets template directory correct
-        $smarty = \OxidEsales\Eshop\Core\Registry::getUtilsView()->getSmarty();
+        $utils = new UtilsView();
+        $smarty = $utils->getSmarty(true);
         if ($view) {
             $cacheId = $view->getViewId();
         }
