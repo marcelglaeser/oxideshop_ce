@@ -69,15 +69,22 @@ class RssController extends \OxidEsales\Eshop\Application\Controller\FrontendCon
     {
         parent::render();
 
-        $renderer = new TemplateRenderer();
+        $renderer = $this->getTemplating();
         // return rss xml, no further processing
         $sCharset = \OxidEsales\Eshop\Core\Registry::getLang()->translateString("charset");
         \OxidEsales\Eshop\Core\Registry::getUtils()->setHeader("Content-Type: text/xml; charset=" . $sCharset);
         \OxidEsales\Eshop\Core\Registry::getUtils()->showMessageAndExit(
             $this->_processOutput(
-                $renderer->renderTemplate($this->_sThisTemplate, $this->_aViewData, $this)
+                $renderer->renderTemplate($this->_sThisTemplate, $this->_aViewData, $this->getViewId())
             )
         );
+    }
+
+    protected function getTemplating()
+    {
+
+        return $this->getContainer()->get(\OxidEsales\EshopCommunity\Internal\Templating\TemplateRenderer::class);
+
     }
 
     /**

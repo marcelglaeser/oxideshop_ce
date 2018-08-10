@@ -1,0 +1,6 @@
+services:
+  OxidEsales\EshopCommunity\Internal\Templating\TemplateRenderer:
+    class: OxidEsales\EshopCommunity\Internal\Templating\TemplateRenderer
+    arguments:
+        $templateEngine: '@OxidEsales\EshopCommunity\Internal\Smarty\SmartyEngine'
+    public: true

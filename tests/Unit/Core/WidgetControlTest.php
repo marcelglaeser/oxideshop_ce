@@ -6,6 +6,8 @@
 namespace OxidEsales\EshopCommunity\Tests\Unit\Core;
 
 use modDB;
+use OxidEsales\Eshop\Application\Component\Widget\LanguageList;
+use OxidEsales\Eshop\Application\Controller\ContactController;
 use OxidEsales\EshopCommunity\Core\Controller\BaseController;
 use \oxRegistry;
 
@@ -40,13 +42,15 @@ class WidgetControlTest extends \OxidTestCase
      */
     public function testRunLast()
     {
+        $view1 = new ContactController();
+        $view2 = new LanguageList();
         $oConfig = $this->getMock(\OxidEsales\Eshop\Core\Config::class, array("hasActiveViewsChain"));
         $oConfig->expects($this->any())->method('hasActiveViewsChain')->will($this->returnValue(true));
 
-        $oConfig->setActiveView("testView1");
-        $oConfig->setActiveView("testView2");
+        $oConfig->setActiveView($view1);
+        $oConfig->setActiveView($view2);
 
-        $this->assertEquals(array("testView1", "testView2"), $oConfig->getActiveViewsList());
+        $this->assertEquals(array($view1, $view2), $oConfig->getActiveViewsList());
 
 
         $oControl = $this->getMock(\OxidEsales\Eshop\Core\WidgetControl::class, array("getConfig"));
@@ -54,8 +58,8 @@ class WidgetControlTest extends \OxidTestCase
 
         $oControl->UNITrunLast();
 
-        $this->assertEquals(array("testView1"), $oConfig->getActiveViewsList());
-      //  $this->assertEquals("testView1", \OxidEsales\Eshop\Core\Registry::getUtilsView()->getSmarty()->get_template_vars("oView"));
+        $this->assertEquals(array($view1), $oConfig->getActiveViewsList());
+        $this->assertEquals($view1, $view1->getViewDataElement("oView"));
     }
 
     /**

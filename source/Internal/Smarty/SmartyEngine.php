@@ -6,7 +6,7 @@
  * Time: 09:34
  */
 
-namespace OxidEsales\EshopCommunity\Core\Templating;
+namespace OxidEsales\EshopCommunity\Internal\Smarty;
 
 use Symfony\Component\Templating\EngineInterface;
 
@@ -30,11 +30,12 @@ class SmartyEngine implements EngineInterface
     {
         $this->engine = $engine;
     }
+
     /**
      * Render the template.
      *
-     * @param string $file
-     * @param array  $vars
+     * @param string $name       The name of the template
+     * @param array  $parameters Parameters to assign
      *
      * @return string
      */
@@ -49,6 +50,19 @@ class SmartyEngine implements EngineInterface
         return $this->engine->fetch($name);
     }
 
+    /**
+     * Checks whether the specified template exists.
+     * It can accept either a path to the template on the filesystem or a resource string specifying the template.
+     *
+     * @param string $name A template name or a TemplateReferenceInterface instance
+     *
+     * @return bool True if the template exists, false otherwise
+     */
+    public function exists($name)
+    {
+        return $this->engine->template_exists($name);
+    }
+
     public function setCacheId($cacheId)
     {
         $this->cacheId = $cacheId;
@@ -60,8 +74,6 @@ class SmartyEngine implements EngineInterface
      * @param string|TemplateReferenceInterface $name A template name or a TemplateReferenceInterface instance
      *
      * @return bool    true if this class supports the given template, false otherwise
-     *
-     * @api
      */
     public function supports($name)
     {
@@ -69,19 +81,25 @@ class SmartyEngine implements EngineInterface
     }
 
     /**
-     * Returns true if the template exists.
+     * Pass parameters to the Smarty instance.
      *
-     * @param string|TemplateReferenceInterface $name A template name or a TemplateReferenceInterface instance
-     *
-     * @return bool    true if the template exists, false otherwise
-     *
-     * @throws \RuntimeException if the engine cannot handle the template name
-     *
-     * @api
+     * @param string $name  The name of the parameter.
+     * @param mixed  $value The value of the parameter.
      */
-    public function exists($name)
+    public function __set($name, $value)
     {
-        //Todo
+        $this->engine->$name = $value;
     }
 
+    /**
+     * Pass parameters to the Smarty instance.
+     *
+     * @param string $name The name of the parameter.
+     *
+     * @return mixed
+     */
+    public function __get($name)
+    {
+        return $this->engine->$name;
+    }
 }

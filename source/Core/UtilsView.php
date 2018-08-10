@@ -15,8 +15,7 @@ use OxidEsales\Eshop\Core\Module\ModuleTemplateBlockRepository;
 use OxidEsales\Eshop\Core\Module\ModuleVariablesLocator;
 use OxidEsales\Eshop\Core\Module\ModuleSmartyPluginDirectoryRepository;
 use OxidEsales\Eshop\Core\ShopIdCalculator as EshopShopIdCalculator;
-use OxidEsales\EshopCommunity\Core\Templating\oxSmarty;
-use OxidEsales\EshopCommunity\Core\Templating\TemplateRenderer;
+use OxidEsales\EshopCommunity\Internal\Templating\TemplateRenderer;
 use Smarty;
 
 /**
@@ -103,8 +102,18 @@ class UtilsView extends \OxidEsales\Eshop\Core\Base
             $viewData = [];
         }
 
-        $template = new TemplateRenderer();
+        $template = $this->getContainer()->get(\OxidEsales\EshopCommunity\Internal\Templating\TemplateRenderer::class);
         return $template->renderTemplate($templateName, $viewData);
+    }
+
+    /**
+     * @internal
+     *
+     * @return \Psr\Container\ContainerInterface
+     */
+    protected function getContainer()
+    {
+        return \OxidEsales\EshopCommunity\Internal\Application\ContainerFactory::getInstance()->getContainer();
     }
 
     /**
@@ -225,13 +234,12 @@ class UtilsView extends \OxidEsales\Eshop\Core\Base
         $activeLanguageId = \OxidEsales\Eshop\Core\Registry::getLang()->getTplLanguage();
 
         // now parse it through smarty
-        $smarty = clone $this->getSmarty();
+        $templating = $this->getContainer()->get(TemplateRenderer::class);
 
         // save old tpl data
-        $tplVars = $smarty->_tpl_vars;
-        $forceRecompile = $smarty->force_compile;
+        $forceRecompile = $templating->getEngine()->force_compile;
 
-        $smarty->force_compile = $blRecompile;
+        $templating->getEngine()->force_compile = $blRecompile;
 
         if (!$oActView) {
             $oActView = oxNew(\OxidEsales\Eshop\Application\Controller\FrontendController::class);
@@ -239,23 +247,19 @@ class UtilsView extends \OxidEsales\Eshop\Core\Base
         }
 
         $viewData = $oActView->getViewData();
-        foreach (array_keys($viewData) as $name) {
-            $smarty->assign($name, $viewData[$name]);
-        }
 
         if (is_array($sDesc)) {
             foreach ($sDesc as $name => $aData) {
-                $smarty->oxidcache = new \OxidEsales\Eshop\Core\Field($aData[1], \OxidEsales\Eshop\Core\Field::T_RAW);
-                $result[$name] = $smarty->fetch("ox:" . $aData[0] . $activeLanguageId);
+                $templating->getEngine()->oxidcache = new \OxidEsales\Eshop\Core\Field($aData[1], \OxidEsales\Eshop\Core\Field::T_RAW);
+                $result[$name] = $templating->renderTemplate("ox:" . $aData[0] . $activeLanguageId, $viewData);
             }
         } else {
-            $smarty->oxidcache = new \OxidEsales\Eshop\Core\Field($sDesc, \OxidEsales\Eshop\Core\Field::T_RAW);
-            $result = $smarty->fetch("ox:{$sOxid}{$activeLanguageId}");
+            $templating->getEngine()->oxidcache = new \OxidEsales\Eshop\Core\Field($sDesc, \OxidEsales\Eshop\Core\Field::T_RAW);
+            $result = $templating->renderTemplate("ox:{$sOxid}{$activeLanguageId}", $viewData);
         }
 
         // restore tpl vars for continuing smarty processing if it is in one
-        $smarty->_tpl_vars = $tplVars;
-        $smarty->force_compile = $forceRecompile;
+        $templating->getEngine()->force_compile = $forceRecompile;
 
         stopProfile("parseThroughSmarty");
 
@@ -408,7 +412,7 @@ class UtilsView extends \OxidEsales\Eshop\Core\Base
     /**
      * @return array
      */
-    protected function getShopSmartyPluginDirectories()
+    public function getShopSmartyPluginDirectories()
     {
         $coreDirectory = $this
             ->getConfig()
@@ -810,7 +814,7 @@ class UtilsView extends \OxidEsales\Eshop\Core\Base
     /**
      * @return array
      */
-    private function getModuleSmartyPluginDirectories()
+    public function getModuleSmartyPluginDirectories()
     {
         $moduleSmartyPluginDirectoryRepository = $this->getSmartyPluginDirectoryRepository();
         $moduleSmartyPluginDirectories = $moduleSmartyPluginDirectoryRepository->get();

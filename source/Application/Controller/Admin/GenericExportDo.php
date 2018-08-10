@@ -7,8 +7,6 @@
 namespace OxidEsales\EshopCommunity\Application\Controller\Admin;
 
 use OxidEsales\EshopCommunity\Application\Controller\TemplateController;
-use OxidEsales\EshopCommunity\Core\SmartyEngine;
-use OxidEsales\EshopCommunity\Core\Templating\TemplateRenderer;
 use oxRegistry;
 use Symfony\Component\Templating\TemplateNameParser;
 
@@ -66,13 +64,18 @@ class GenericExportDo extends \OxidEsales\Eshop\Application\Controller\Admin\Dyn
                 "encl" => $myConfig->getConfigParam('sGiCsvFieldEncloser')
             ];
 
-            $template = new TemplateRenderer();
-            $this->write($template->renderTemplate("genexport.tpl", $parameters, $this));
+            $template = $this->getTemplating();
+            $this->write($template->renderTemplate("genexport.tpl", $parameters, $this->getViewId()));
 
             return ++$iExportedItems;
         }
 
         return $blContinue;
+    }
+
+    protected function getTemplating()
+    {
+        return $this->getContainer()->get(\OxidEsales\EshopCommunity\Internal\Templating\TemplateRenderer::class);
     }
 
     /**

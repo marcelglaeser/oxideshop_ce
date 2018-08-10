@@ -88,7 +88,7 @@ class DiagnosticsMain extends \OxidEsales\Eshop\Application\Controller\Admin\Adm
 
         $this->_sShopDir = $this->getConfig()->getConfigParam('sShopDir');
         $this->_oOutput = oxNew(\OxidEsales\Eshop\Application\Model\DiagnosticsOutput::class);
-        $this->_oRenderer = oxNew(TemplateRenderer::class);
+        $this->_oRenderer = $this->getContainer()->get(\OxidEsales\EshopCommunity\Internal\Templating\TemplateRenderer::class);
     }
 
     /**

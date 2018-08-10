@@ -448,6 +448,7 @@ class ShopControl extends \OxidEsales\Eshop\Core\Base
      */
     protected function _render($view)
     {
+        $templating = $this->getTemplating();
         // render it
         $templateName = $view->render();
 
@@ -484,8 +485,7 @@ class ShopControl extends \OxidEsales\Eshop\Core\Base
         // passing current view object to smarty
        // $smarty->oxobject = $view;
 
-        $templating = new TemplateRenderer();
-        $output = $templating->renderTemplate($templateName, $viewData, $view);
+        $output = $templating->renderTemplate($templateName, $viewData, $view->getViewId());
 
 
             //$smarty->fetch($templateName, $view->getViewId());
@@ -494,6 +494,23 @@ class ShopControl extends \OxidEsales\Eshop\Core\Base
         $output = $outputManager->process($output, $view->getClassName());
 
         return $outputManager->addVersionTags($output);
+    }
+
+    protected function getTemplating()
+    {
+
+        return $this->getContainer()->get(\OxidEsales\EshopCommunity\Internal\Templating\TemplateRenderer::class);
+
+    }
+
+    /**
+     * @internal
+     *
+     * @return \Psr\Container\ContainerInterface
+     */
+    protected function getContainer()
+    {
+        return \OxidEsales\EshopCommunity\Internal\Application\ContainerFactory::getInstance()->getContainer();
     }
 
     /**
@@ -568,7 +585,7 @@ class ShopControl extends \OxidEsales\Eshop\Core\Base
                     "oViewConf" => $activeView->getViewConfig(),
                     "oView" => $activeView
                 ];
-                $template = new TemplateRenderer();
+                $template = $this->getContainer()->get(\OxidEsales\EshopCommunity\Internal\Templating\TemplateRenderer::class);
                 \OxidEsales\Eshop\Core\Registry::getUtils()->showMessageAndExit($template->renderTemplate($tpl, $parameters));
             }
 
