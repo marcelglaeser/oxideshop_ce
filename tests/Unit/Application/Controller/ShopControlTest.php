@@ -13,7 +13,7 @@ use OxidEsales\Eshop\Core\Registry;
 use OxidEsales\EshopCommunity\Core\Exception\ConnectionException;
 use OxidEsales\EshopCommunity\Core\Exception\ExceptionToDisplay;
 use OxidEsales\EshopCommunity\Core\Output;
-use OxidEsales\EshopCommunity\Internal\Templating\TemplateRenderer;
+use OxidEsales\EshopCommunity\Internal\Templating\TemplateEngineBridge;
 use oxOutput;
 use oxRegistry;
 use oxSystemComponentException;
@@ -268,17 +268,17 @@ class ShopControlTest extends \OxidTestCase
         $oOut->expects($this->once())->method('process');
         $oOut->expects($this->any())->method('addVersionTags')->will($this->returnValue(true));
 
-        $oSmarty = $this->getMockBuilder(TemplateRenderer::class)
+        $templateEngine = $this->getMockBuilder(TemplateEngineBridge::class)
             ->setMethods(['renderTemplate'])
             ->disableOriginalConstructor()
             ->getMock();
-        $oSmarty->expects($this->any())->method('renderTemplate')->with($this->equalTo("message/exception.tpl"));
+        $templateEngine->expects($this->any())->method('renderTemplate')->with($this->equalTo("message/exception.tpl"));
 
         $oControl = $this->getMock(\OxidEsales\Eshop\Core\ShopControl::class, array("isAdmin", '_getOutputManager', '_isDebugMode', 'getTemplating'), array(), '', false);
         $oControl->expects($this->any())->method('isAdmin')->will($this->returnValue(false));
         $oControl->expects($this->any())->method('_getOutputManager')->will($this->returnValue($oOut));
         $oControl->expects($this->any())->method('_isDebugMode')->will($this->returnValue(true));
-        $oControl->expects($this->any())->method('getTemplating')->will($this->returnValue($oSmarty));
+        $oControl->expects($this->any())->method('getTemplating')->will($this->returnValue($templateEngine));
 
         $oControl->UNITrender($oView);
         \OxidEsales\Eshop\Core\Registry::getUtilsView()->passAllErrorsToView($aViewData, $oControl->UNITgetErrors('oxubase'));
@@ -321,14 +321,14 @@ class ShopControlTest extends \OxidTestCase
         $oOut->expects($this->once())->method('flushOutput')->will($this->returnValue(null));
         $oOut->expects($this->once())->method('sendHeaders')->will($this->returnValue(null));
 
-        $oSmarty = $this->getSmartyMock($this->getTemplateName($controllerClassName));
+        $templateEngine = $this->getTemplateEngineMock($this->getTemplateName($controllerClassName));
 
         $oControl = $this->getMock(\OxidEsales\Eshop\Core\ShopControl::class, $aTasks, array(), '', false);
         $oControl->expects($this->any())->method('getConfig')->will($this->returnValue($oConfig));
         $oControl->expects($this->any())->method('isAdmin')->will($this->returnValue(false));
         $oControl->expects($this->any())->method('_getOutputManager')->will($this->returnValue($oOut));
         $oControl->expects($this->atLeastOnce())->method('_executeMaintenanceTasks');
-        $oControl->expects($this->any())->method('getTemplating')->will($this->returnValue($oSmarty));
+        $oControl->expects($this->any())->method('getTemplating')->will($this->returnValue($templateEngine));
 
         $oControl->UNITprocess($controllerClassName, null);
     }
@@ -363,7 +363,7 @@ class ShopControlTest extends \OxidTestCase
         $oOut->expects($this->at(3))->method('output')->with($this->equalTo($controllerClassName), $this->anything());
         $oOut->expects($this->at(4))->method('flushOutput')->will($this->returnValue(null));
 
-        $oSmarty = $this->getSmartyMock($this->getTemplateName($controllerClassName));
+        $templateEngine = $this->getTemplateEngineMock($this->getTemplateName($controllerClassName));
 
         $oControl = $this->getMock(\OxidEsales\Eshop\Core\ShopControl::class, $aTasks, array(), '', false);
         $oControl->expects($this->any())->method('getConfig')->will($this->returnValue($oConfig));
@@ -371,7 +371,7 @@ class ShopControlTest extends \OxidTestCase
         $oControl->expects($this->any())->method('_getOutputManager')->will($this->returnValue($oOut));
         $oControl->expects($this->any())->method('_getErrors')->will($this->returnValue(array()));
         $oControl->expects($this->atLeastOnce())->method('_executeMaintenanceTasks');
-        $oControl->expects($this->any())->method('getTemplating')->will($this->returnValue($oSmarty));
+        $oControl->expects($this->any())->method('getTemplating')->will($this->returnValue($templateEngine));
 
         $oControl->UNITprocess($controllerClassName, null);
     }
@@ -414,14 +414,14 @@ class ShopControlTest extends \OxidTestCase
         $oOut->expects($this->at(3))->method('output')->with($this->equalTo($controllerClassName), $this->anything());
         $oOut->expects($this->at(4))->method('flushOutput')->will($this->returnValue(null));
 
-        $oSmarty = $this->getSmartyMock($this->getTemplateName($controllerClassName));
+        $templateEngine = $this->getTemplateEngineMock($this->getTemplateName($controllerClassName));
 
         $oControl = $this->getMock(\OxidEsales\Eshop\Core\ShopControl::class, $aTasks, array(), '', false);
         $oControl->expects($this->any())->method('getConfig')->will($this->returnValue($oConfig));
         $oControl->expects($this->any())->method('isAdmin')->will($this->returnValue(false));
         $oControl->expects($this->any())->method('_getOutputManager')->will($this->returnValue($oOut));
         $oControl->expects($this->atLeastOnce())->method('_executeMaintenanceTasks');
-        $oControl->expects($this->any())->method('getTemplating')->will($this->returnValue($oSmarty));
+        $oControl->expects($this->any())->method('getTemplating')->will($this->returnValue($templateEngine));
         $aErrors = array();
         $oDE = oxNew('oxDisplayError');
         $oDE->setMessage('test1');
@@ -624,15 +624,15 @@ class ShopControlTest extends \OxidTestCase
      *
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
-    private function getSmartyMock($expectedTemplate)
+    private function getTemplateEngineMock($expectedTemplate)
     {
-        $oSmarty = $this->getMockBuilder(TemplateRenderer::class)
+        $templateEngine = $this->getMockBuilder(TemplateEngineBridge::class)
             ->setMethods(['renderTemplate'])
             ->disableOriginalConstructor()
             ->getMock();
-        $oSmarty->expects($this->any())->method('renderTemplate')->with($this->equalTo($expectedTemplate));
+        $templateEngine->expects($this->any())->method('renderTemplate')->with($this->equalTo($expectedTemplate));
 
-        return $oSmarty;
+        return $templateEngine;
     }
 
     /**

@@ -10,12 +10,10 @@ use OxidEsales\Eshop\Core\Exception\DatabaseConnectionException;
 use OxidEsales\Eshop\Core\Exception\RoutingException;
 use OxidEsales\Eshop\Core\Exception\StandardException;
 use OxidEsales\Eshop\Core\Cache\DynamicContent\ContentCache;
-use OxidEsales\EshopCommunity\Core\Templating\TemplateRenderer;
 use oxOutput;
 use oxSystemComponentException;
 use PHPMailer;
 use ReflectionMethod;
-use Symfony\Component\Templating\TemplateNameParser;
 
 /**
  * Main shop actions controller. Processes user actions, logs
@@ -487,7 +485,6 @@ class ShopControl extends \OxidEsales\Eshop\Core\Base
 
         $output = $templating->renderTemplate($templateName, $viewData, $view->getViewId());
 
-
             //$smarty->fetch($templateName, $view->getViewId());
 
         //Output processing - useful for modules as sometimes you may want to process output manually.
@@ -499,7 +496,7 @@ class ShopControl extends \OxidEsales\Eshop\Core\Base
     protected function getTemplating()
     {
 
-        return $this->getContainer()->get(\OxidEsales\EshopCommunity\Internal\Templating\TemplateRenderer::class);
+        return $this->getContainer()->get(\OxidEsales\EshopCommunity\Internal\Templating\TemplateEngineBridge::class);
 
     }
 
@@ -585,7 +582,7 @@ class ShopControl extends \OxidEsales\Eshop\Core\Base
                     "oViewConf" => $activeView->getViewConfig(),
                     "oView" => $activeView
                 ];
-                $template = $this->getContainer()->get(\OxidEsales\EshopCommunity\Internal\Templating\TemplateRenderer::class);
+                $template = $this->getContainer()->get(\OxidEsales\EshopCommunity\Internal\Templating\TemplateEngineBridge::class);
                 \OxidEsales\Eshop\Core\Registry::getUtils()->showMessageAndExit($template->renderTemplate($tpl, $parameters));
             }
 

@@ -15,7 +15,7 @@ use OxidEsales\Eshop\Core\Module\ModuleTemplateBlockRepository;
 use OxidEsales\Eshop\Core\Module\ModuleVariablesLocator;
 use OxidEsales\Eshop\Core\Module\ModuleSmartyPluginDirectoryRepository;
 use OxidEsales\Eshop\Core\ShopIdCalculator as EshopShopIdCalculator;
-use OxidEsales\EshopCommunity\Internal\Templating\TemplateRenderer;
+use OxidEsales\EshopCommunity\Internal\Templating\TemplateEngineBridge;
 use Smarty;
 
 /**
@@ -102,7 +102,7 @@ class UtilsView extends \OxidEsales\Eshop\Core\Base
             $viewData = [];
         }
 
-        $template = $this->getContainer()->get(\OxidEsales\EshopCommunity\Internal\Templating\TemplateRenderer::class);
+        $template = $this->getContainer()->get(\OxidEsales\EshopCommunity\Internal\Templating\TemplateEngineBridge::class);
         return $template->renderTemplate($templateName, $viewData);
     }
 
@@ -234,7 +234,7 @@ class UtilsView extends \OxidEsales\Eshop\Core\Base
         $activeLanguageId = \OxidEsales\Eshop\Core\Registry::getLang()->getTplLanguage();
 
         // now parse it through smarty
-        $templating = $this->getContainer()->get(TemplateRenderer::class);
+        $templating = $this->getContainer()->get(TemplateEngineBridge::class);
 
         // save old tpl data
         $forceRecompile = $templating->getEngine()->force_compile;
@@ -432,31 +432,6 @@ class UtilsView extends \OxidEsales\Eshop\Core\Base
     {
         $config = $this->getConfig();
         $smarty->compile_check = $config->getConfigParam('blCheckTemplates');
-    }
-
-    /**
-     * is called when a template cannot be obtained from its resource.
-     *
-     * @param string $resourceType      template type
-     * @param string $resourceName      template file name
-     * @param string $resourceContent   template file content
-     * @param int    $resourceTimestamp template file timestamp
-     * @param object $smarty            template processor object (smarty)
-     *
-     * @return bool
-     */
-    public function _smartyDefaultTemplateHandler($resourceType, $resourceName, &$resourceContent, &$resourceTimestamp, $smarty)
-    {
-        $config = \OxidEsales\Eshop\Core\Registry::getConfig();
-        if ($resourceType == 'file' && !is_readable($resourceName)) {
-            $resourceName = $config->getTemplatePath($resourceName, $config->isAdmin());
-            $resourceContent = $smarty->_read_file($resourceName);
-            $resourceTimestamp = filemtime($resourceName);
-
-            return is_file($resourceName) && is_readable($resourceName);
-        }
-
-        return false;
     }
 
     /**

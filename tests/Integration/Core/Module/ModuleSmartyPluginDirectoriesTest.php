@@ -6,7 +6,7 @@
 
 namespace OxidEsales\EshopCommunity\Tests\Integration\Core\Module;
 
-use OxidEsales\EshopCommunity\Internal\Templating\TemplateRenderer;
+use OxidEsales\EshopCommunity\Internal\Templating\TemplateEngineBridge;
 use OxidEsales\EshopCommunity\Tests\Integration\Modules\Environment;
 use OxidEsales\Eshop\Core\UtilsView;
 use OxidEsales\TestingLibrary\UnitTestCase;
@@ -23,7 +23,7 @@ class ModuleSmartyPluginDirectoriesTest extends UnitTestCase
     {
         $this->activateTestModule();
 
-        $templating = $this->getContainer()->get(TemplateRenderer::class);
+        $templating = $this->getContainer()->get(TemplateEngineBridge::class);
 
         $this->assertTrue(
             $this->isPathInSmartyDirectories($templating, 'Smarty/PluginDirectory1WithMetadataVersion21')
@@ -38,7 +38,7 @@ class ModuleSmartyPluginDirectoriesTest extends UnitTestCase
     {
         $this->activateTestModule();
 
-        $templating = $this->getContainer()->get(TemplateRenderer::class);
+        $templating = $this->getContainer()->get(TemplateEngineBridge::class);
 
         $this->assertModuleSmartyPluginDirectoriesFirst($templating->getEngine()->plugins_dir);
         $this->assertShopSmartyPluginDirectorySecond($templating->getEngine()->plugins_dir);

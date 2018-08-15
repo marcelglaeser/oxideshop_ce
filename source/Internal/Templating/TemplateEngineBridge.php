@@ -10,7 +10,7 @@ namespace OxidEsales\EshopCommunity\Internal\Templating;
 
 use Symfony\Component\Templating\EngineInterface;
 
-class TemplateRenderer
+class TemplateEngineBridge
 {
     private $templateEngine;
 

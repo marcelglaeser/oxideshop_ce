@@ -8,6 +8,10 @@
 
 namespace OxidEsales\EshopCommunity\Internal\Smarty;
 
+/**
+ * Interface SmartyContextInterface
+ * @package OxidEsales\EshopCommunity\Internal\Smarty
+ */
 interface SmartyContextInterface
 {
     /**
@@ -64,4 +68,11 @@ interface SmartyContextInterface
      * @return string
      */
     public function getShopTemplatePluginDirectory();
+
+    /**
+     * @param string $templateName
+     *
+     * @return string
+     */
+    public function getTemplatePath($templateName);
 }

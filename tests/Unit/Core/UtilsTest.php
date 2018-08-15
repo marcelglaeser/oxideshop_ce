@@ -10,7 +10,7 @@ use modDB;
 use oxField;
 use OxidEsales\EshopCommunity\Core\DatabaseProvider;
 use OxidEsales\EshopCommunity\Core\Registry;
-use OxidEsales\EshopCommunity\Internal\Templating\TemplateRenderer;
+use OxidEsales\EshopCommunity\Internal\Templating\TemplateEngineBridge;
 use oxRegistry;
 use oxSystemComponentException;
 use oxTestModules;
@@ -751,12 +751,12 @@ class UtilsTest extends \OxidTestCase
         $config->setConfigParam('sTheme', 'azure');
 
         $utils = oxRegistry::getUtils();
-        $smarty = $this->getContainer()->get(TemplateRenderer::class);
+        $templateEngine = $this->getContainer()->get(TemplateEngineBridge::class);
         $tmpDir = $config->getConfigParam('sCompileDir') . "/smarty/";
 
         $templates = array('message/success.tpl', 'message/notice.tpl', 'message/errors.tpl',);
         foreach ($templates as $template) {
-            $smarty->renderTemplate($template, []);
+            $templateEngine->renderTemplate($template, []);
         }
 
         $removeTemplate = basename(reset($templates));

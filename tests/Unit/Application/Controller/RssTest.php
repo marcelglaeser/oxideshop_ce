@@ -5,7 +5,7 @@
  */
 namespace OxidEsales\EshopCommunity\Tests\Unit\Application\Controller;
 
-use OxidEsales\EshopCommunity\Internal\Templating\TemplateRenderer;
+use OxidEsales\EshopCommunity\Internal\Templating\TemplateEngineBridge;
 use \oxTestModules;
 
 class RssTest extends \OxidTestCase
@@ -51,11 +51,11 @@ class RssTest extends \OxidTestCase
     public function testRender()
     {
 
-        $oSmarty = $this->getMockBuilder(TemplateRenderer::class)
+        $templateEngine = $this->getMockBuilder(TemplateEngineBridge::class)
             ->setMethods(['renderTemplate'])
             ->disableOriginalConstructor()
             ->getMock();
-        $oSmarty->expects($this->any())->method('renderTemplate')->with($this->equalTo("widget/rss.tpl"))->will($this->returnValue('smarty processed xml'));
+        $templateEngine->expects($this->any())->method('renderTemplate')->with($this->equalTo("widget/rss.tpl"))->will($this->returnValue('smarty processed xml'));
 
         $oUtils = $this->getMock(\OxidEsales\Eshop\Core\Utils::class, array('setHeader', 'showMessageAndExit'));
         $oUtils->expects($this->once())->method('setHeader')->with($this->equalTo('Content-Type: text/xml; charset=XCHARSET'));
@@ -66,7 +66,7 @@ class RssTest extends \OxidTestCase
 
         $oRss = $this->getMock(\OxidEsales\Eshop\Application\Controller\RssController::class, array('getViewId', 'getTemplating'));
         $oRss->expects($this->once())->method('getViewId')->will($this->returnValue('viewid'));
-        $oRss->expects($this->any())->method('getTemplating')->will($this->returnValue($oSmarty));
+        $oRss->expects($this->any())->method('getTemplating')->will($this->returnValue($templateEngine));
 
         oxTestModules::addModuleObject('oxUtils', $oUtils);
         oxTestModules::addModuleObject('oxLang', $oLang);

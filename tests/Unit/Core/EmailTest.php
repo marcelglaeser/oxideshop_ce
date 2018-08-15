@@ -6,7 +6,7 @@
 namespace OxidEsales\EshopCommunity\Tests\Unit\Core;
 
 use \oxField;
-use OxidEsales\EshopCommunity\Internal\Templating\TemplateRenderer;
+use OxidEsales\EshopCommunity\Internal\Templating\TemplateEngineBridge;
 use \oxPrice;
 use \oxDb;
 use \oxRegistry;
@@ -1078,16 +1078,16 @@ class EmailTest extends \OxidTestCase
      */
     public function testSendOrderEmailToOwnerCorrectSenderReceiver()
     {
-        $oSmartyMock = $this->getMockBuilder(TemplateRenderer::class)
+        $templateEngine = $this->getMockBuilder(TemplateEngineBridge::class)
             ->setMethods(['renderTemplate', 'exists'])
             ->disableOriginalConstructor()
             ->getMock();
-        $oSmartyMock->expects($this->any())->method('renderTemplate')->will($this->returnValue(true));
-        $oSmartyMock->expects($this->any())->method('exists')->will($this->returnValue(true));
+        $templateEngine->expects($this->any())->method('renderTemplate')->will($this->returnValue(true));
+        $templateEngine->expects($this->any())->method('exists')->will($this->returnValue(true));
 
         $oEmail = $this->getMock(\OxidEsales\Eshop\Core\Email::class, array("_sendMail", "_getTemplateRenderer"));
         $oEmail->expects($this->once())->method("_sendMail")->will($this->returnValue(true));
-        $oEmail->expects($this->any())->method("_getTemplateRenderer")->will($this->returnValue($oSmartyMock));
+        $oEmail->expects($this->any())->method("_getTemplateRenderer")->will($this->returnValue($templateEngine));
 
         $oUser = oxNew('oxUser');
         $oUser->load("oxdefaultadmin");
@@ -1111,16 +1111,16 @@ class EmailTest extends \OxidTestCase
      */
     public function testSendSuggestMailCorrectSender()
     {
-        $oSmartyMock = $this->getMockBuilder(TemplateRenderer::class)
+        $templateEngine = $this->getMockBuilder(TemplateEngineBridge::class)
             ->setMethods(['renderTemplate', 'exists'])
             ->disableOriginalConstructor()
             ->getMock();
-        $oSmartyMock->expects($this->any())->method('renderTemplate')->will($this->returnValue(true));
-        $oSmartyMock->expects($this->any())->method('exists')->will($this->returnValue(true));
+        $templateEngine->expects($this->any())->method('renderTemplate')->will($this->returnValue(true));
+        $templateEngine->expects($this->any())->method('exists')->will($this->returnValue(true));
 
         $oEmail = $this->getMock(\OxidEsales\Eshop\Core\Email::class, array("send", "_getTemplateRenderer"));
         $oEmail->expects($this->once())->method("send")->will($this->returnValue(true));
-        $oEmail->expects($this->any())->method("_getTemplateRenderer")->will($this->returnValue($oSmartyMock));
+        $oEmail->expects($this->any())->method("_getTemplateRenderer")->will($this->returnValue($templateEngine));
 
         // oxParams mock
         $oParams = $this->getMock("oxParams");

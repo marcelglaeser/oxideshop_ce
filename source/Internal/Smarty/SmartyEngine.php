@@ -9,9 +9,17 @@
 namespace OxidEsales\EshopCommunity\Internal\Smarty;
 
 use Symfony\Component\Templating\EngineInterface;
+use Symfony\Component\Templating\TemplateNameParserInterface;
 
+/**
+ * Class SmartyEngine
+ * @package OxidEsales\EshopCommunity\Internal\Smarty
+ */
 class SmartyEngine implements EngineInterface
 {
+    /**
+     * @var string
+     */
     private $cacheId;
 
     /**
@@ -22,13 +30,20 @@ class SmartyEngine implements EngineInterface
     private $engine;
 
     /**
+     * @var TemplateNameParserInterface
+     */
+    protected $parser;
+
+    /**
      * Constructor.
      *
-     * @param \Smarty $engine
+     * @param \Smarty                     $engine
+     * @param TemplateNameParserInterface $parser
      */
-    public function __construct(\Smarty $engine)
+    public function __construct(\Smarty $engine, TemplateNameParserInterface $parser)
     {
         $this->engine = $engine;
+        $this->parser = $parser;
     }
 
     /**
@@ -54,7 +69,7 @@ class SmartyEngine implements EngineInterface
      * Checks whether the specified template exists.
      * It can accept either a path to the template on the filesystem or a resource string specifying the template.
      *
-     * @param string $name A template name or a TemplateReferenceInterface instance
+     * @param string $name A template name
      *
      * @return bool True if the template exists, false otherwise
      */
@@ -63,6 +78,9 @@ class SmartyEngine implements EngineInterface
         return $this->engine->template_exists($name);
     }
 
+    /**
+     * @param string $cacheId
+     */
     public function setCacheId($cacheId)
     {
         $this->cacheId = $cacheId;
@@ -71,13 +89,16 @@ class SmartyEngine implements EngineInterface
     /**
      * Returns true if this class is able to render the given template.
      *
-     * @param string|TemplateReferenceInterface $name A template name or a TemplateReferenceInterface instance
+     * @param string $name A template name
      *
-     * @return bool    true if this class supports the given template, false otherwise
+     * @return Boolean True if this class supports the given resource, false otherwise
      */
     public function supports($name)
     {
-        //Todo
+        $template = $this->parser->parse($name);
+
+        // Keep 'tpl' for backwards compatibility.
+        return in_array($template->get('engine'), array('smarty', 'tpl'), true);
     }
 
     /**

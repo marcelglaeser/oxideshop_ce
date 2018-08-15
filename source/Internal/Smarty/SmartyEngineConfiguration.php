@@ -8,8 +8,13 @@
 
 namespace OxidEsales\EshopCommunity\Internal\Smarty;
 
+use OxidEsales\EshopCommunity\Internal\Smarty\Extensions\oxSmarty;
 
-class TemplateEngineConfiguration implements TemplateEngineConfigurationInterface
+/**
+ * Class SmartyEngineConfiguration
+ * @package OxidEsales\EshopCommunity\Internal\Smarty
+ */
+class SmartyEngineConfiguration implements TemplateEngineConfigurationInterface
 {
     /**
      * @var SmartyContextInterface
@@ -26,6 +31,11 @@ class TemplateEngineConfiguration implements TemplateEngineConfigurationInterfac
         $this->context = $context;
     }
 
+    /**
+     * Return an array of smarty options to configure.
+     *
+     * @return array
+     */
     public function getOptions()
     {
         return [
@@ -36,12 +46,17 @@ class TemplateEngineConfiguration implements TemplateEngineConfigurationInterfac
             'cache_dir' => $this->context->getTemplateCompileDirectory(),
             'template_dir' => $this->context->getTemplateDirectories(),
             'compile_id' => $this->context->getTemplateCompileId(),
-            'default_template_handler_func' => [\OxidEsales\Eshop\Core\Registry::getUtilsView(), '_smartyDefaultTemplateHandler'],
-            'debugging' => $this->getDebuggMode(),
+            'default_template_handler_func' => [oxSmarty::getInstance($this->context), '_smartyDefaultTemplateHandler'],
+            'debugging' => $this->context->getTemplateEngineDebugMode(),
             'compile_check' => $this->context->getTemplateCompileCheck()
         ];
     }
 
+    /**
+     * Return an array of smarty security options to configure.
+     *
+     * @return array
+     */
     public function getSecurityOptions()
     {
         $options = [
@@ -59,6 +74,11 @@ class TemplateEngineConfiguration implements TemplateEngineConfigurationInterfac
         return $options;
     }
 
+    /**
+     * Return an array of smarty plugins to assign.
+     *
+     * @return array
+     */
     public function getPlugins()
     {
         return array_merge(
@@ -67,6 +87,11 @@ class TemplateEngineConfiguration implements TemplateEngineConfigurationInterfac
         );
     }
 
+    /**
+     * Return an array of prefilters to register.
+     *
+     * @return array
+     */
     public function getPrefilterPlugin()
     {
         $shopSmartyPluginPath = $this->context->getShopTemplatePluginDirectory() ;
@@ -78,10 +103,16 @@ class TemplateEngineConfiguration implements TemplateEngineConfigurationInterfac
         return $prefilter;
     }
 
+    /**
+     * Return an array of resources to register.
+     *
+     * @return array
+     */
     public function getResources()
     {
+        $oxSmarty = oxSmarty::getInstance($this->context);
         return ['ox' => [
-                    oxSmarty::class,
+                    $oxSmarty,
                     'ox_get_template',
                     'ox_get_timestamp',
                     'ox_get_secure',
@@ -90,6 +121,11 @@ class TemplateEngineConfiguration implements TemplateEngineConfigurationInterfac
                 ];
     }
 
+    /**
+     * Return an array of security settings.
+     *
+     * @return array
+     */
     private function getSecuritySettings()
     {
         return [
@@ -99,12 +135,16 @@ class TemplateEngineConfiguration implements TemplateEngineConfigurationInterfac
         ];
     }
 
-    private function getDebuggMode()
-    {
-        return $this->context->getTemplateEngineDebugMode();
-    }
-
     /**
+     * Get properties for smarty:
+     * [
+     *   'options' => 'smartyCommonOptions',
+     *   'securityOptions' => 'smartySecurityOptions',
+     *   'plugins' => 'smartyPluginsToRegister',
+     *   'prefilters' => 'smartyPreFiltersToRegister',
+     *   'resources' => 'smartyResourcesToRegister',
+     * ]
+     *
      * @return array
      */
     public function getParameters()

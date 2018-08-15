@@ -1,14 +1,16 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: vilma
- * Date: 06.08.18
- * Time: 16:02
+ * Copyright © OXID eSales AG. All rights reserved.
+ * See LICENSE file for license details.
  */
 
 namespace OxidEsales\EshopCommunity\Internal\Smarty;
 
-
+/**
+ * Interface TemplateEngineConfigurationInterface
+ *
+ * @package OxidEsales\EshopCommunity\Internal\Smarty
+ */
 interface TemplateEngineConfigurationInterface
 {
     /**

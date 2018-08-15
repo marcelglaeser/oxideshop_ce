@@ -8,10 +8,13 @@
 
 namespace OxidEsales\EshopCommunity\Internal\Smarty;
 
-
 use OxidEsales\Eshop\Core\Config;
 use OxidEsales\Eshop\Core\UtilsView;
 
+/**
+ * Class SmartyContext
+ * @package OxidEsales\EshopCommunity\Internal\Smarty
+ */
 class SmartyContext implements SmartyContextInterface
 {
     /**
@@ -126,6 +129,16 @@ class SmartyContext implements SmartyContextInterface
         $coreDirectory = $this->getConfigParameter('sCoreDir');
 
         return $coreDirectory . 'Smarty/Plugin';
+    }
+
+    /**
+     * @param string $templateName
+     *
+     * @return string
+     */
+    public function getTemplatePath($templateName)
+    {
+        return $this->config->getTemplatePath($templateName, $this->getBackendMode());
     }
 
     /**

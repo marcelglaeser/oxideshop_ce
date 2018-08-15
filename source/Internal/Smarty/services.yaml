@@ -15,7 +15,7 @@ services:
     public: false
 
   OxidEsales\EshopCommunity\Internal\Smarty\TemplateEngineConfigurationInterface:
-    class: OxidEsales\EshopCommunity\Internal\Smarty\TemplateEngineConfiguration
+    class: OxidEsales\EshopCommunity\Internal\Smarty\SmartyEngineConfiguration
     arguments:
         - '@OxidEsales\EshopCommunity\Internal\Smarty\SmartyContextInterface'
     public: false
@@ -29,6 +29,10 @@ services:
     class: Smarty
     factory: 'OxidEsales\EshopCommunity\Internal\Smarty\SmartyFactoryInterface:getSmarty'
     public: false
+
+  Symfony\Component\Templating\TemplateNameParserInterface:
+    class: Symfony\Component\Templating\TemplateNameParser
+    public: true
 
   OxidEsales\EshopCommunity\Internal\Smarty\SmartyEngine:
     class: OxidEsales\EshopCommunity\Internal\Smarty\SmartyEngine

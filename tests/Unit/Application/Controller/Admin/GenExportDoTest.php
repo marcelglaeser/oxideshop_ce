@@ -5,7 +5,7 @@
  */
 namespace OxidEsales\EshopCommunity\Tests\Unit\Application\Controller\Admin;
 
-use OxidEsales\EshopCommunity\Internal\Templating\TemplateRenderer;
+use OxidEsales\EshopCommunity\Internal\Templating\TemplateEngineBridge;
 
 /**
  * Tests for GenExport_Do class
@@ -40,11 +40,11 @@ class GenExportDoTest extends \OxidTestCase
             "spr" => $this->getConfigParam('sCSVSign'),
             "encl" => $this->getConfigParam('sGiCsvFieldEncloser')
         ];
-        $oSmarty = $this->getMockBuilder(TemplateRenderer::class)
+        $templateEngine = $this->getMockBuilder(TemplateEngineBridge::class)
             ->setMethods(['renderTemplate'])
             ->disableOriginalConstructor()
             ->getMock();
-        $oSmarty->expects($this->any())->method('renderTemplate')->with(
+        $templateEngine->expects($this->any())->method('renderTemplate')->with(
             $this->equalTo('genexport.tpl'),
             $this->equalTo($parameters),
             $this->equalTo('dyn_interface')
@@ -54,7 +54,7 @@ class GenExportDoTest extends \OxidTestCase
         $oView->expects($this->once())->method('getOneArticle')->will($this->returnValue($article));
         $oView->expects($this->once())->method('write');
         $oView->expects($this->once())->method('getViewId')->will($this->returnValue('dyn_interface'));
-        $oView->expects($this->any())->method('getTemplating')->will($this->returnValue($oSmarty));
+        $oView->expects($this->any())->method('getTemplating')->will($this->returnValue($templateEngine));
 
         $this->assertEquals(2, $oView->nextTick(1));
     }

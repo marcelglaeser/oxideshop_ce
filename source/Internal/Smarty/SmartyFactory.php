@@ -8,9 +8,10 @@
 
 namespace OxidEsales\EshopCommunity\Internal\Smarty;
 
+use Smarty;
 
 /**
- * Stores the Smarty configuration.
+ * Creates and configures the Smarty object.
  */
 class SmartyFactory implements SmartyFactoryInterface
 {
@@ -43,14 +44,17 @@ class SmartyFactory implements SmartyFactoryInterface
         $this->properties = $configuration->getParameters();
     }
 
+    /**
+     * @return Smarty
+     */
     public function getSmarty()
     {
-        $this->smarty = new \Smarty();
+        $this->smarty = new Smarty();
 
         $this->fillSmartyProperties($this->properties);
-        $this->registerPlugins($this->properties['plugins']);
-        $this->registerPrefilters($this->properties['prefilters']);
-        $this->registerResources($this->properties['resources']);
+        $this->registerPlugins($this->properties);
+        $this->registerPrefilters($this->properties);
+        $this->registerResources($this->properties);
 
         return $this->smarty;
     }
@@ -63,22 +67,26 @@ class SmartyFactory implements SmartyFactoryInterface
     private function fillSmartyProperties($properties)
     {
         //set options
-        foreach ($properties['options'] as $key => $value) {
-            $this->smarty->$key = $value;
+        if (isset($properties['options'])) {
+            foreach ($properties['options'] as $key => $value) {
+                $this->smarty->$key = $value;
+            }
         }
-
         $this->setSecuritySettings($properties['securityOptions']);
     }
 
     /**
      * Registers a resource of smarty object.
      *
-     * @param array $resourcesToRegister The Resources to fetch a template.
+     * @param array $parameters The Resources to fetch a template.
      */
-    private function registerResources($resourcesToRegister)
+    private function registerResources($parameters)
     {
-        foreach ($resourcesToRegister as $key => $resources) {
-            $this->smarty->register_resource($key, $resources);
+        if (isset($parameters['resources'])) {
+            $resourcesToRegister = $parameters['resources'];
+            foreach ($resourcesToRegister as $key => $resources) {
+                $this->smarty->register_resource($key, $resources);
+            }
         }
     }
 
@@ -91,14 +99,18 @@ class SmartyFactory implements SmartyFactoryInterface
     {
         //set options
         foreach ($securityOptions as $key => $value) {
-            $this->smarty->$key = $value;
+            if ($key !== 'security_settings') {
+                $this->smarty->$key = $value;
+            }
         }
 
         if (isset($securityOptions['security_settings'])) {
             $securitySettings = $securityOptions['security_settings'];
             foreach ($securitySettings as $key => $value) {
                 if (is_array($value)) {
-                    $this->smarty->security_settings[$key][] = $value;
+                    foreach ($value as $subValue) {
+                        $this->smarty->security_settings[$key][] = $subValue;
+                    }
                 } else {
                     $this->smarty->security_settings[$key] = $value;
                 }
@@ -109,13 +121,18 @@ class SmartyFactory implements SmartyFactoryInterface
     /**
      * Register prefilters of smarty object.
      *
-     * @param array $prefilters
+     * @param array $parameters
      */
-    private function registerPrefilters($prefilters)
+    private function registerPrefilters($parameters)
     {
-        foreach ($prefilters as $prefilter => $path) {
-            include_once $path;
-            $this->smarty->register_prefilter($prefilter);
+        if (isset($parameters['prefilters'])) {
+            $prefilters = $parameters['prefilters'];
+            foreach ($prefilters as $prefilter => $path) {
+                if (file_exists($path)) {
+                    include_once $path;
+                    $this->smarty->register_prefilter($prefilter);
+                }
+            }
         }
     }
 
@@ -126,6 +143,8 @@ class SmartyFactory implements SmartyFactoryInterface
      */
     private function registerPlugins($plugins)
     {
-        $this->smarty->plugins_dir = array_merge($plugins, $this->smarty->plugins_dir);
+        if (isset($plugins['plugins'])) {
+            $this->smarty->plugins_dir = array_merge($plugins['plugins'], $this->smarty->plugins_dir);
+        }
     }
 }

@@ -6,7 +6,7 @@
 
 namespace OxidEsales\EshopCommunity\Core;
 
-use OxidEsales\EshopCommunity\Internal\Templating\TemplateRenderer;
+use OxidEsales\EshopCommunity\Internal\Templating\TemplateEngineBridge;
 use Exception;
 use oxSystemComponentException;
 
@@ -248,9 +248,9 @@ class Email extends \PHPMailer
     /**
      * Smarty instance
      *
-     * @var TemplateRenderer
+     * @var TemplateEngineBridge
      */
-    protected $_oSmarty = null;
+    protected $templateEngine = null;
 
     /**
      * Email view data
@@ -351,18 +351,18 @@ class Email extends \PHPMailer
     /**
      * Smarty instance getter, assigns this oxEmail instance to "oEmailView" variable
      *
-     * @return TemplateRenderer
+     * @return TemplateEngineBridge
      */
     protected function _getTemplateRenderer()
     {
-        if ($this->_oSmarty === null) {
-            $this->_oSmarty = $this->getContainer()->get(TemplateRenderer::class);
+        if ($this->templateEngine === null) {
+            $this->templateEngine = $this->getContainer()->get(TemplateEngineBridge::class);
         }
 
         //setting default view
         $this->setViewData('oEmailView', $this);
 
-        return $this->_oSmarty;
+        return $this->templateEngine;
     }
 
     /**
@@ -627,8 +627,8 @@ class Email extends \PHPMailer
         //Sets subject to email
         // #586A
         if ($subject === null) {
-            if ($smarty->template_exists($this->_sOrderOwnerSubjectTemplate)) {
-                $subject = $smarty->fetch($this->_sOrderOwnerSubjectTemplate);
+            if ($templating->exists($this->_sOrderOwnerSubjectTemplate)) {
+                $subject = $templating->renderTemplate($this->_sOrderOwnerSubjectTemplate, $this->getViewData());
             } else {
                 $subject = $shop->oxshops__oxordersubject->getRawValue() . " (#" . $order->oxorder__oxordernr->value . ")";
             }
@@ -2095,9 +2095,9 @@ class Email extends \PHPMailer
         $outputProcessor = oxNew(\OxidEsales\Eshop\Core\Output::class);
 
         // processing assigned smarty variables
-        $newSmartyArray = $outputProcessor->processViewArray($this->_aViewData, "oxemail");
+        $newArray = $outputProcessor->processViewArray($this->_aViewData, "oxemail");
 
-        $this->_aViewData = array_merge($this->_aViewData, $newSmartyArray);
+        $this->_aViewData = array_merge($this->_aViewData, $newArray);
     }
 
     /**

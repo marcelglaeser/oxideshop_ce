@@ -1,6 +1,6 @@
 services:
-  OxidEsales\EshopCommunity\Internal\Templating\TemplateRenderer:
-    class: OxidEsales\EshopCommunity\Internal\Templating\TemplateRenderer
+  OxidEsales\EshopCommunity\Internal\Templating\TemplateEngineBridge:
+    class: OxidEsales\EshopCommunity\Internal\Templating\TemplateEngineBridge
     arguments:
         $templateEngine: '@OxidEsales\EshopCommunity\Internal\Smarty\SmartyEngine'
     public: true
