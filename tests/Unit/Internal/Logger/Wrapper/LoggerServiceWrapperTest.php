@@ -13,7 +13,7 @@ use OxidEsales\EshopCommunity\Internal\Logger\Wrapper\LoggerWrapper;
  *
  * @package OxidEsales\EshopCommunity\Tests\Unit\Internal\Logger\Wrapper
  */
-class LoggerServiceWrapperTest extends \PHPUnit_Framework_TestCase
+class LoggerServiceWrapperTest extends \PHPUnit\Framework\TestCase
 {
 
     /**
