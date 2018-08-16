@@ -1,0 +1,40 @@
+services:
+  OxidEsales\Eshop\Core\Config:
+    class: OxidEsales\Eshop\Core\Config
+    factory: ['OxidEsales\Eshop\Core\Registry', getConfig]
+    public: false
+
+  OxidEsales\Eshop\Core\UtilsView:
+    class: OxidEsales\Eshop\Core\UtilsView
+    factory: ['OxidEsales\Eshop\Core\Registry', getUtilsView]
+    public: false
+
+  OxidEsales\EshopCommunity\Internal\Twig\TwigContextInterface:
+    class: OxidEsales\EshopCommunity\Internal\Twig\TwigContext
+    autowire: true
+    public: false
+
+  OxidEsales\EshopCommunity\Internal\Twig\TemplateEngineConfigurationInterface:
+    class: OxidEsales\EshopCommunity\Internal\Twig\TwigEngineConfiguration
+    arguments:
+        - '@OxidEsales\EshopCommunity\Internal\Twig\TwigContextInterface'
+    public: false
+
+  OxidEsales\EshopCommunity\Internal\Twig\TwigFactoryInterface:
+    class: OxidEsales\EshopCommunity\Internal\Twig\TwigFactory
+    autowire: true
+    public: false
+
+  Twig:
+    class: Twig_Environment
+    factory: 'OxidEsales\EshopCommunity\Internal\Twig\TwigFactoryInterface:getTwig'
+    public: false
+
+  Symfony\Component\Templating\TemplateNameParserInterface:
+    class: Symfony\Component\Templating\TemplateNameParser
+    public: true
+
+  OxidEsales\EshopCommunity\Internal\Twig\TwigEngine:
+    class: OxidEsales\EshopCommunity\Internal\Twig\TwigEngine
+    autowire: true
+    public: false
