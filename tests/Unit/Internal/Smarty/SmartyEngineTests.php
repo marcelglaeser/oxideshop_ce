@@ -51,13 +51,4 @@ class SmartyEngineTests extends \PHPUnit_Framework_TestCase
 
         return new SmartyEngine(new \Smarty(), $parser);
     }
-
-    /**
-     * @return \Psr\Container\ContainerInterface
-     */
-    private function getContainer()
-    {
-        return \OxidEsales\EshopCommunity\Internal\Application\ContainerFactory::getInstance()->getContainer();
-    }
-
 }

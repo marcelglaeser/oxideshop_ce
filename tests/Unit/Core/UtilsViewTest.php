@@ -7,6 +7,7 @@ namespace OxidEsales\EshopCommunity\Tests\Unit\Core;
 
 use OxidEsales\Eshop\Core\Theme;
 use OxidEsales\EshopCommunity\Core\Templating\oxSmarty;
+use OxidEsales\EshopCommunity\Internal\Templating\TemplateEngineBridge;
 use \stdClass;
 use \oxRegistry;
 use \oxTestModules;
@@ -318,97 +319,10 @@ class UtilsViewTest extends \OxidTestCase
         $this->assertEquals(['!' => '?'], $oUtilsView->parseThroughSmarty(['!' => ['%', '[{$shop->urlSeparator}]']], time(), $oActView));
     }
 
-    public function testFillCommonSmartyPropertiesAndSmartyCompileCheckDemoShopContains()
-    {
-        if ($this->getTestConfig()->getShopEdition() != 'CE') {
-            $this->markTestSkipped('This test is for Community edition only.');
-        }
-
-        $config = oxNew('oxConfig');
-
-        $config->setConfigParam('iDebug', 1);
-        $config->setConfigParam('blDemoShop', 1);
-
-        $templateDirs = [];
-
-        $sTplDir = $config->getTemplateDir($config->isAdmin());
-        if ($sTplDir) {
-            $templateDirs[] = $sTplDir;
-        }
-
-        $sTplDir = $config->getOutDir() . $config->getConfigParam('sTheme') . "/tpl/";
-        if ($sTplDir && !in_array($sTplDir, $templateDirs)) {
-            $templateDirs[] = $sTplDir;
-        }
-
-        $compileDirectory = $this->getCompileDirectory();
-        $config->setConfigParam('sCompileDir', $compileDirectory);
-
-        $smartyCheckArray = $this->getSmartyCheckArray($compileDirectory, $config);
-
-        $smarty = $this->getSmartyMock();
-
-        $oUtilsView = oxNew('oxUtilsView');
-        $oUtilsView->setConfig($config);
-        $oUtilsView->UNITfillCommonSmartyProperties($smarty);
-        $oUtilsView->UNITsmartyCompileCheck($smarty);
-
-        foreach ($smartyCheckArray as $varName => $varValue) {
-            $this->assertTrue(isset($smarty->$varName));
-            $this->assertEquals($varValue, $smarty->$varName, $varName);
-        }
-
-        $this->assertArraySubset($templateDirs, $smarty->template_dir);
-    }
-
-    // non demo mode
-    public function testFillCommonSmartyPropertiesAndSmartyCompileCheckExactMatch()
-    {
-        if ($this->getTestConfig()->getShopEdition() != 'CE') {
-            $this->markTestSkipped('This test is for Community edition only.');
-        }
-
-        $config = oxNew('oxConfig');
-
-        $config->setConfigParam('iDebug', 1);
-        $config->setConfigParam('blDemoShop', 0);
-
-        $aTemplatesDir = [];
-
-        $sTplDir = $config->getTemplateDir($config->isAdmin());
-        if ($sTplDir) {
-            $aTemplatesDir[] = $sTplDir;
-        }
-
-        $sTplDir = $config->getOutDir() . $config->getConfigParam('sTheme') . "/tpl/";
-        if ($sTplDir && !in_array($sTplDir, $aTemplatesDir)) {
-            $aTemplatesDir[] = $sTplDir;
-        }
-
-        $compileDirectory = $this->getCompileDirectory();
-        $config->setConfigParam('sCompileDir', $compileDirectory);
-
-        $aCheck = $this->getSmartyCheckArrayForFillCommonSmartyPropertiesAndSmartyCompileCheck($config, $compileDirectory);
-        $aCheck['template_dir'] = $aTemplatesDir;
-
-        $oSmarty = $this->getMock('\Smarty', ['register_resource']);
-        $oSmarty->expects($this->once())->method('register_resource');
-
-        $oUtilsView = oxNew('oxUtilsView');
-        $oUtilsView->setConfig($config);
-        $oUtilsView->UNITfillCommonSmartyProperties($oSmarty);
-        $oUtilsView->UNITsmartyCompileCheck($oSmarty);
-
-        foreach ($aCheck as $sVarName => $sVarValue) {
-            $this->assertTrue(isset($oSmarty->$sVarName));
-            $this->assertEquals($sVarValue, $oSmarty->$sVarName, $sVarName);
-        }
-    }
-
     public function testParseThroughSmartyInDiffLang()
     {
-        $smarty = \OxidEsales\Eshop\Core\Registry::getUtilsView()->getSmarty();
-        $smarty->compile_check = false;
+        $templateEngine = $this->getContainer()->get(TemplateEngineBridge::class)->getEngine();
+        $templateEngine->compile_check = false;
         $lang = oxRegistry::getLang()->getTplLanguage();
 
         oxRegistry::getLang()->setTplLanguage(0);
@@ -416,7 +330,7 @@ class UtilsViewTest extends \OxidTestCase
         oxRegistry::getLang()->setTplLanguage(1);
         $text2 = \OxidEsales\Eshop\Core\Registry::getUtilsView()->parseThroughSmarty('bbb', 'aaa');
 
-        $smarty->compile_check = true;
+        $templateEngine->compile_check = true;
         oxRegistry::getLang()->setTplLanguage($lang);
 
         $this->assertEquals('aaa', $text1);
@@ -503,108 +417,6 @@ class UtilsViewTest extends \OxidTestCase
     }
 
     /**
-     * @param $compileDirectory
-     * @param $config
-     * @return array
-     */
-    private function getSmartyCheckArray($compileDirectory, $config)
-    {
-        $aCheck = [
-            'security' => true,
-            'php_handling' => SMARTY_PHP_REMOVE,
-            'left_delimiter' => '[{',
-            'right_delimiter' => '}]',
-            'caching' => false,
-            'compile_dir' => $compileDirectory . "/smarty/",
-            'cache_dir' => $compileDirectory . "/smarty/",
-            'compile_id' => md5($config->getTemplateDir(false) . '__' . $config->getShopId()),
-            'debugging' => true,
-            'compile_check' => true,
-            'security_settings' => [
-                'PHP_HANDLING' => false,
-                'IF_FUNCS' =>
-                    [
-                        0 => 'array',
-                        1 => 'list',
-                        2 => 'isset',
-                        3 => 'empty',
-                        4 => 'count',
-                        5 => 'sizeof',
-                        6 => 'in_array',
-                        7 => 'is_array',
-                        8 => 'true',
-                        9 => 'false',
-                        10 => 'null',
-                        11 => 'XML_ELEMENT_NODE',
-                        12 => 'is_int',
-                    ],
-                'INCLUDE_ANY' => false,
-                'PHP_TAGS' => false,
-                'MODIFIER_FUNCS' =>
-                    [
-                        0 => 'count',
-                        1 => 'round',
-                        2 => 'floor',
-                        3 => 'trim',
-                        4 => 'implode',
-                        5 => 'is_array',
-                        6 => 'getimagesize',
-                    ],
-                'ALLOW_CONSTANTS' => true,
-                'ALLOW_SUPER_GLOBALS' => true,
-            ]
-        ];
-        return $aCheck;
-    }
-
-    /**
-     * @param $config
-     * @param $compileDirectory
-     * @return array
-     */
-    private function getSmartyCheckArrayForFillCommonSmartyPropertiesAndSmartyCompileCheck($config, $compileDirectory)
-    {
-        $aCheck = [
-            'security' => false,
-            'php_handling' => (int)$config->getConfigParam('iSmartyPhpHandling'),
-            'left_delimiter' => '[{',
-            'right_delimiter' => '}]',
-            'caching' => false,
-            'compile_dir' => $compileDirectory . "/smarty/",
-            'cache_dir' => $compileDirectory . "/smarty/",
-            'compile_id' => md5($config->getTemplateDir(false) . '__' . $config->getShopId()),
-            'debugging' => true,
-            'compile_check' => true,
-            'plugins_dir' => [$this->getConfigParam('sCoreDir') . 'Smarty/Plugin', 'plugins'],
-        ];
-        return $aCheck;
-    }
-
-    /**
-     * @return \PHPUnit_Framework_MockObject_MockObject
-     */
-    private function getSmartyMock()
-    {
-        $oSmarty = $this->getMock('\Smarty', ['register_resource', 'register_prefilter']);
-        $oSmarty->expects($this->once())->method('register_resource')
-            ->with(
-                $this->equalTo('ox'),
-                $this->equalTo(
-                    [
-                        oxSmarty::class,
-                        'ox_get_template',
-                        'ox_get_timestamp',
-                        'ox_get_secure',
-                        'ox_get_trusted',
-                    ]
-                )
-            );
-        $oSmarty->expects($this->once())->method('register_prefilter')
-            ->with($this->equalTo('smarty_prefilter_oxblock'));
-        return $oSmarty;
-    }
-
-    /**
      * @return string
      */
     private function getCompileDirectory()
@@ -613,5 +425,15 @@ class UtilsViewTest extends \OxidTestCase
         $oVfsStreamWrapper->createStructure(['tmp_directory' => []]);
         $compileDirectory = $oVfsStreamWrapper->getRootPath() . 'tmp_directory';
         return $compileDirectory;
+    }
+
+    /**
+     * @internal
+     *
+     * @return \Psr\Container\ContainerInterface
+     */
+    private function getContainer()
+    {
+        return \OxidEsales\EshopCommunity\Internal\Application\ContainerFactory::getInstance()->getContainer();
     }
 }
