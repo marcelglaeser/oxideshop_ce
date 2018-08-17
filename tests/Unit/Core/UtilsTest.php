@@ -1419,7 +1419,7 @@ class UtilsTest extends \OxidTestCase
      *
      * @return \Psr\Container\ContainerInterface
      */
-    protected function getContainer()
+    private function getContainer()
     {
         return \OxidEsales\EshopCommunity\Internal\Application\ContainerFactory::getInstance()->getContainer();
     }

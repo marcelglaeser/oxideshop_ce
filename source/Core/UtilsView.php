@@ -79,16 +79,6 @@ class UtilsView extends \OxidEsales\Eshop\Core\Base
     }
 
     /**
-     * @internal
-     *
-     * @return \Psr\Container\ContainerInterface
-     */
-    protected function getContainer()
-    {
-        return \OxidEsales\EshopCommunity\Internal\Application\ContainerFactory::getInstance()->getContainer();
-    }
-
-    /**
      * adds the given errors to the view array
      *
      * @param array $aView  view data array

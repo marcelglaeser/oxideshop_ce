@@ -503,16 +503,6 @@ class ShopControl extends \OxidEsales\Eshop\Core\Base
     }
 
     /**
-     * @internal
-     *
-     * @return \Psr\Container\ContainerInterface
-     */
-    protected function getContainer()
-    {
-        return \OxidEsales\EshopCommunity\Internal\Application\ContainerFactory::getInstance()->getContainer();
-    }
-
-    /**
      * Return output handler.
      *
      * @return oxOutput
