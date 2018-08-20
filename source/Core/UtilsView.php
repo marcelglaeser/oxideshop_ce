@@ -15,7 +15,7 @@ use OxidEsales\Eshop\Core\Module\ModuleTemplateBlockRepository;
 use OxidEsales\Eshop\Core\Module\ModuleVariablesLocator;
 use OxidEsales\Eshop\Core\Module\ModuleSmartyPluginDirectoryRepository;
 use OxidEsales\Eshop\Core\ShopIdCalculator as EshopShopIdCalculator;
-use OxidEsales\EshopCommunity\Internal\Templating\TemplateEngineBridge;
+use OxidEsales\EshopCommunity\Internal\Templating\TemplateEngineBridgeInterface;
 use Smarty;
 
 /**
@@ -74,7 +74,7 @@ class UtilsView extends \OxidEsales\Eshop\Core\Base
             $viewData = [];
         }
 
-        $template = $this->getContainer()->get(\OxidEsales\EshopCommunity\Internal\Templating\TemplateEngineBridge::class);
+        $template = $this->getContainer()->get(TemplateEngineBridgeInterface::class);
         return $template->renderTemplate($templateName, $viewData);
     }
 
@@ -196,7 +196,7 @@ class UtilsView extends \OxidEsales\Eshop\Core\Base
         $activeLanguageId = \OxidEsales\Eshop\Core\Registry::getLang()->getTplLanguage();
 
         // now parse it through smarty
-        $templating = $this->getContainer()->get(TemplateEngineBridge::class);
+        $templating = $this->getContainer()->get(TemplateEngineBridgeInterface::class);
 
         // save old tpl data
         $forceRecompile = $templating->getEngine()->force_compile;

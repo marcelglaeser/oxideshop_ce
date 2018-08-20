@@ -6,9 +6,6 @@
 
 namespace OxidEsales\EshopCommunity\Application\Controller\Admin;
 
-use OxidEsales\EshopCommunity\Internal\Templating\TemplateEngineBridge;
-use oxRegistry;
-
 /**
  * Admin systeminfo manager.
  * Returns template, that arranges two other templates ("delivery_list.tpl"
@@ -57,7 +54,7 @@ class SystemInfoController extends \OxidEsales\Eshop\Application\Controller\Admi
                 "isdemo" => $myConfig->isDemoShop(),
                 "aSystemInfo" => $aSystemInfo
             ];
-            $template = $this->getContainer()->get(\OxidEsales\EshopCommunity\Internal\Templating\TemplateEngineBridge::class);
+            $template = $this->getContainer()->get(\OxidEsales\EshopCommunity\Internal\Templating\TemplateEngineBridgeInterface::class);
             echo $template->renderTemplate("systeminfo.tpl", $parameters);
             echo("<br><br>");
 

@@ -8,14 +8,15 @@
 
 namespace OxidEsales\EshopCommunity\Internal\Smarty;
 
-use Symfony\Component\Templating\EngineInterface;
+use OxidEsales\EshopCommunity\Internal\Templating\BaseEngineInterface;
 use Symfony\Component\Templating\TemplateNameParserInterface;
 
 /**
  * Class SmartyEngine
+ *
  * @package OxidEsales\EshopCommunity\Internal\Smarty
  */
-class SmartyEngine implements EngineInterface
+class SmartyEngine implements BaseEngineInterface
 {
     /**
      * @var string
@@ -33,6 +34,13 @@ class SmartyEngine implements EngineInterface
      * @var TemplateNameParserInterface
      */
     protected $parser;
+
+    /**
+     * Array of global parameters
+     *
+     * @var array
+     */
+    private $globals = [];
 
     /**
      * Constructor.
@@ -56,6 +64,8 @@ class SmartyEngine implements EngineInterface
      */
     public function render($name, array $parameters = array())
     {
+        // attach the global variables
+        $parameters = array_replace($this->getGlobals(), $parameters);
         foreach ($parameters as $key => $value) {
             $this->engine->assign($key, $value);
         }
@@ -63,6 +73,25 @@ class SmartyEngine implements EngineInterface
             return $this->engine->fetch($name, $this->cacheId);
         }
         return $this->engine->fetch($name);
+    }
+
+    /**
+     * @param string $name
+     * @param mixed  $value
+     */
+    public function addGlobal($name, $value)
+    {
+        $this->globals[$name] = $value;
+    }
+
+    /**
+     * Returns the assigned globals.
+     *
+     * @return array
+     */
+    public function getGlobals()
+    {
+        return $this->globals;
     }
 
     /**

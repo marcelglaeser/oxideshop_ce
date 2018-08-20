@@ -8,6 +8,7 @@ namespace OxidEsales\EshopCommunity\Core;
 
 use OxidEsales\EshopCommunity\Internal\Templating\TemplateEngineBridge;
 use Exception;
+use OxidEsales\EshopCommunity\Internal\Templating\TemplateEngineBridgeInterface;
 use oxSystemComponentException;
 
 /**
@@ -356,7 +357,7 @@ class Email extends \PHPMailer
     protected function _getTemplateRenderer()
     {
         if ($this->templateEngine === null) {
-            $this->templateEngine = $this->getContainer()->get(TemplateEngineBridge::class);
+            $this->templateEngine = $this->getContainer()->get(TemplateEngineBridgeInterface::class);
         }
 
         //setting default view

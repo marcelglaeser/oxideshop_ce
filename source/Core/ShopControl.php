@@ -10,7 +10,7 @@ use OxidEsales\Eshop\Core\Exception\DatabaseConnectionException;
 use OxidEsales\Eshop\Core\Exception\RoutingException;
 use OxidEsales\Eshop\Core\Exception\StandardException;
 use OxidEsales\Eshop\Core\Cache\DynamicContent\ContentCache;
-use OxidEsales\EshopCommunity\Internal\Templating\TemplateEngineBridge;
+use OxidEsales\EshopCommunity\Internal\Templating\TemplateEngineBridgeInterface;
 use oxOutput;
 use oxSystemComponentException;
 use PHPMailer;
@@ -495,11 +495,13 @@ class ShopControl extends \OxidEsales\Eshop\Core\Base
     }
 
     /**
-     * @return TemplateEngineBridge
+     * @internal
+     *
+     * @return TemplateEngineBridgeInterface
      */
     protected function getTemplating()
     {
-        return $this->getContainer()->get(TemplateEngineBridge::class);
+        return $this->getContainer()->get(TemplateEngineBridgeInterface::class);
     }
 
     /**
@@ -574,7 +576,7 @@ class ShopControl extends \OxidEsales\Eshop\Core\Base
                     "oViewConf" => $activeView->getViewConfig(),
                     "oView" => $activeView
                 ];
-                $template = $this->getContainer()->get(\OxidEsales\EshopCommunity\Internal\Templating\TemplateEngineBridge::class);
+                $template = $this->getTemplating();
                 \OxidEsales\Eshop\Core\Registry::getUtils()->showMessageAndExit($template->renderTemplate($tpl, $parameters));
             }
 
