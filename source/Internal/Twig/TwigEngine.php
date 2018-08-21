@@ -34,7 +34,7 @@ class TwigEngine implements BaseEngineInterface
 
     /**
      * TwigEngine constructor.
-     * @param TemplateEngineConfigurationInterface $engine
+     * @param TemplateEngineConfigurationInterface $configuration
      * @param TemplateNameParserInterface $parser
      */
     public function __construct(TemplateEngineConfigurationInterface $configuration, TemplateNameParserInterface $parser)
