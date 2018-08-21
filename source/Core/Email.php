@@ -6,7 +6,6 @@
 
 namespace OxidEsales\EshopCommunity\Core;
 
-use OxidEsales\EshopCommunity\Internal\Templating\TemplateEngineBridge;
 use Exception;
 use OxidEsales\EshopCommunity\Internal\Templating\TemplateEngineBridgeInterface;
 use oxSystemComponentException;
@@ -249,7 +248,7 @@ class Email extends \PHPMailer
     /**
      * Smarty instance
      *
-     * @var TemplateEngineBridge
+     * @var TemplateEngineBridgeInterface
      */
     protected $templateEngine = null;
 
@@ -352,7 +351,7 @@ class Email extends \PHPMailer
     /**
      * Smarty instance getter, assigns this oxEmail instance to "oEmailView" variable
      *
-     * @return TemplateEngineBridge
+     * @return TemplateEngineBridgeInterface
      */
     protected function _getTemplateRenderer()
     {

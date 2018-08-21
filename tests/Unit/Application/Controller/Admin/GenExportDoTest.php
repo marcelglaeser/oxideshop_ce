@@ -5,7 +5,7 @@
  */
 namespace OxidEsales\EshopCommunity\Tests\Unit\Application\Controller\Admin;
 
-use OxidEsales\EshopCommunity\Internal\Templating\TemplateEngineBridge;
+use OxidEsales\EshopCommunity\Internal\Templating\TemplateEngineBridgeInterface;
 
 /**
  * Tests for GenExport_Do class
@@ -40,8 +40,8 @@ class GenExportDoTest extends \OxidTestCase
             "spr" => $this->getConfigParam('sCSVSign'),
             "encl" => $this->getConfigParam('sGiCsvFieldEncloser')
         ];
-        $templateEngine = $this->getMockBuilder(TemplateEngineBridge::class)
-            ->setMethods(['renderTemplate'])
+        $templateEngine = $this->getMockBuilder(TemplateEngineBridgeInterface::class)
+            ->setMethods(['renderTemplate', 'exists', 'getEngine'])
             ->disableOriginalConstructor()
             ->getMock();
         $templateEngine->expects($this->any())->method('renderTemplate')->with(

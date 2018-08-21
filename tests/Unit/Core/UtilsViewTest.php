@@ -7,7 +7,7 @@ namespace OxidEsales\EshopCommunity\Tests\Unit\Core;
 
 use OxidEsales\Eshop\Core\Theme;
 use OxidEsales\EshopCommunity\Core\Templating\oxSmarty;
-use OxidEsales\EshopCommunity\Internal\Templating\TemplateEngineBridge;
+use OxidEsales\EshopCommunity\Internal\Templating\TemplateEngineBridgeInterface;
 use \stdClass;
 use \oxRegistry;
 use \oxTestModules;
@@ -321,7 +321,7 @@ class UtilsViewTest extends \OxidTestCase
 
     public function testParseThroughSmartyInDiffLang()
     {
-        $templateEngine = $this->getContainer()->get(TemplateEngineBridge::class)->getEngine();
+        $templateEngine = $this->getContainer()->get(TemplateEngineBridgeInterface::class)->getEngine();
         $templateEngine->compile_check = false;
         $lang = oxRegistry::getLang()->getTplLanguage();
 

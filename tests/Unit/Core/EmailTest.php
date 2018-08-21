@@ -6,7 +6,7 @@
 namespace OxidEsales\EshopCommunity\Tests\Unit\Core;
 
 use \oxField;
-use OxidEsales\EshopCommunity\Internal\Templating\TemplateEngineBridge;
+use OxidEsales\EshopCommunity\Internal\Templating\TemplateEngineBridgeInterface;
 use \oxPrice;
 use \oxDb;
 use \oxRegistry;
@@ -1078,8 +1078,8 @@ class EmailTest extends \OxidTestCase
      */
     public function testSendOrderEmailToOwnerCorrectSenderReceiver()
     {
-        $templateEngine = $this->getMockBuilder(TemplateEngineBridge::class)
-            ->setMethods(['renderTemplate', 'exists'])
+        $templateEngine = $this->getMockBuilder(TemplateEngineBridgeInterface::class)
+            ->setMethods(['renderTemplate', 'exists', 'getEngine'])
             ->disableOriginalConstructor()
             ->getMock();
         $templateEngine->expects($this->any())->method('renderTemplate')->will($this->returnValue(true));
@@ -1111,8 +1111,8 @@ class EmailTest extends \OxidTestCase
      */
     public function testSendSuggestMailCorrectSender()
     {
-        $templateEngine = $this->getMockBuilder(TemplateEngineBridge::class)
-            ->setMethods(['renderTemplate', 'exists'])
+        $templateEngine = $this->getMockBuilder(TemplateEngineBridgeInterface::class)
+            ->setMethods(['renderTemplate', 'exists', 'getEngine'])
             ->disableOriginalConstructor()
             ->getMock();
         $templateEngine->expects($this->any())->method('renderTemplate')->will($this->returnValue(true));

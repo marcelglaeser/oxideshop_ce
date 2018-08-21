@@ -9,6 +9,7 @@ use modDB;
 use OxidEsales\Eshop\Application\Component\Widget\LanguageList;
 use OxidEsales\Eshop\Application\Controller\ContactController;
 use OxidEsales\EshopCommunity\Core\Controller\BaseController;
+use OxidEsales\EshopCommunity\Internal\Templating\TemplateEngineBridgeInterface;
 use \oxRegistry;
 
 class WidgetControlTest extends \OxidTestCase
@@ -52,14 +53,19 @@ class WidgetControlTest extends \OxidTestCase
 
         $this->assertEquals(array($view1, $view2), $oConfig->getActiveViewsList());
 
-
-        $oControl = $this->getMock(\OxidEsales\Eshop\Core\WidgetControl::class, array("getConfig"));
+        $template = 
+        
+        $oControl = $this->getMock(\OxidEsales\Eshop\Core\WidgetControl::class, array("getConfig", "getTemplating"));
         $oControl->expects($this->any())->method('getConfig')->will($this->returnValue($oConfig));
+        $oControl->expects($this->any())->method('getTemplating')->will($this->returnValue($oConfig));
 
         $oControl->UNITrunLast();
 
         $this->assertEquals(array($view1), $oConfig->getActiveViewsList());
-        $this->assertEquals($view1, $view1->getViewDataElement("oView"));
+        /** @var TemplateEngineBridgeInterface $templateEngine */
+        $templateEngine = $this->getContainer()->get(TemplateEngineBridgeInterface::class);
+        $globals = $templateEngine->getEngine()->getGlobals();
+        $this->assertEquals($view1, $globals["oView"]);
     }
 
     /**
@@ -106,6 +112,17 @@ class WidgetControlTest extends \OxidTestCase
         $this->assertEquals("oxwCookieNote", $aActiveViews[2]->getClassName());
 
         $this->assertEquals("oxwCookieNote", $oControl->getConfig()->getActiveView()->getClassName());
+    }
+
+    /**
+     * @internal
+     *
+     * @return \Psr\Container\ContainerInterface
+     */
+    private function getContainer()
+    {
+        \OxidEsales\EshopCommunity\Internal\Application\ContainerFactory::getInstance()->resetContainer();
+        return \OxidEsales\EshopCommunity\Internal\Application\ContainerFactory::getInstance()->getContainer();
     }
 
 }
