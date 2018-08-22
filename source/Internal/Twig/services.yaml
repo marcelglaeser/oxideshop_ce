@@ -12,19 +12,33 @@ services:
   OxidEsales\EshopCommunity\Internal\Twig\TwigContextInterface:
     class: OxidEsales\EshopCommunity\Internal\Twig\TwigContext
     autowire: true
-    public: false
+    public: true
 
   OxidEsales\EshopCommunity\Internal\Twig\TemplateEngineConfigurationInterface:
     class: OxidEsales\EshopCommunity\Internal\Twig\TwigEngineConfiguration
     arguments:
         - '@OxidEsales\EshopCommunity\Internal\Twig\TwigContextInterface'
-    public: false
+    public: true
 
   Symfony\Component\Templating\TemplateNameParserInterface:
     class: Symfony\Component\Templating\TemplateNameParser
-    public: true
+    public: false
+
+  twig.loader.filesystem:
+    class: Twig\Loader\FilesystemLoader
+    arguments: ["@=service('OxidEsales\\\\EshopCommunity\\\\Internal\\\\Twig\\\\TwigContextInterface').getTemplateDirectories()"]
+    public: false
+
+  twig.environment:
+    class: Twig\Environment
+    arguments:
+        - '@twig.loader.filesystem'
+        - "@=service('OxidEsales\\\\EshopCommunity\\\\Internal\\\\Twig\\\\TemplateEngineConfigurationInterface').getParameters()"
+    public: false
 
   OxidEsales\EshopCommunity\Internal\Twig\TwigEngine:
     class: OxidEsales\EshopCommunity\Internal\Twig\TwigEngine
-    autowire: true
+    arguments:
+        - '@twig.environment'
+        - '@Symfony\Component\Templating\TemplateNameParserInterface'
     public: false

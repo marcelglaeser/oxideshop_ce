@@ -11,6 +11,7 @@ namespace OxidEsales\EshopCommunity\Internal\Twig;
 use OxidEsales\EshopCommunity\Internal\Templating\BaseEngineInterface;
 use Symfony\Component\Templating\TemplateNameParserInterface;
 use Symfony\Component\Templating\TemplateReferenceInterface;
+use Twig\Environment;
 
 class TwigEngine implements BaseEngineInterface
 {
@@ -34,19 +35,12 @@ class TwigEngine implements BaseEngineInterface
 
     /**
      * TwigEngine constructor.
-     * @param TemplateEngineConfigurationInterface $configuration
+     * @param Environment $configuration
      * @param TemplateNameParserInterface $parser
      */
-    public function __construct(TemplateEngineConfigurationInterface $configuration, TemplateNameParserInterface $parser)
+    public function __construct(Environment $engine, TemplateNameParserInterface $parser)
     {
-
-    	$properties = $configuration->getParameters();
-		$directories = array_filter($properties['template_dir'], function ($directory) {
-			return is_dir($directory);
-		});
-
-		$loader = new \Twig_Loader_Filesystem($directories);
-		$this->engine = new \Twig_Environment($loader);
+		$this->engine = $engine;
         $this->parser = $parser;
     }
 
