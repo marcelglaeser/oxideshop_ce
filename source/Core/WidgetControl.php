@@ -85,7 +85,7 @@ class WidgetControl extends \OxidEsales\Eshop\Core\ShopControl
 
             // Setting back last active view.
             /** @var BaseEngineInterface $engine */
-            $engine = $this->getTemplating();
+            $engine = $this->getTemplating()->getEngine();
 
             $engine->addGlobal('oView', $oConfig->getActiveView());
         }

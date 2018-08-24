@@ -53,18 +53,16 @@ class WidgetControlTest extends \OxidTestCase
 
         $this->assertEquals(array($view1, $view2), $oConfig->getActiveViewsList());
 
-        $template = 
+        $template = $this->getContainer()->get(TemplateEngineBridgeInterface::class);
         
         $oControl = $this->getMock(\OxidEsales\Eshop\Core\WidgetControl::class, array("getConfig", "getTemplating"));
         $oControl->expects($this->any())->method('getConfig')->will($this->returnValue($oConfig));
-        $oControl->expects($this->any())->method('getTemplating')->will($this->returnValue($oConfig));
+        $oControl->expects($this->any())->method('getTemplating')->will($this->returnValue($template));
 
         $oControl->UNITrunLast();
 
         $this->assertEquals(array($view1), $oConfig->getActiveViewsList());
-        /** @var TemplateEngineBridgeInterface $templateEngine */
-        $templateEngine = $this->getContainer()->get(TemplateEngineBridgeInterface::class);
-        $globals = $templateEngine->getEngine()->getGlobals();
+        $globals = $template->getEngine()->getGlobals();
         $this->assertEquals($view1, $globals["oView"]);
     }
 

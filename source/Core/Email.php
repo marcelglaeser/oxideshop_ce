@@ -753,8 +753,8 @@ class Email extends \PHPMailer
             $this->_processViewArray();
 
             $this->_setMailParams($shop);
-            $this->setBody($templating->renderTemplate($this->_sForgotPwdTemplate), $this->getViewData());
-            $this->setAltBody($templating->renderTemplate($this->_sForgotPwdTemplatePlain), $this->getViewData());
+            $this->setBody($templating->renderTemplate($this->_sForgotPwdTemplate, $this->getViewData()));
+            $this->setAltBody($templating->renderTemplate($this->_sForgotPwdTemplatePlain, $this->getViewData()));
             $this->setSubject(($subject !== null) ? $subject : $shop->oxshops__oxforgotpwdsubject->getRawValue());
 
             $fullName = $user->oxuser__oxfname->getRawValue() . " " . $user->oxuser__oxlname->getRawValue();
